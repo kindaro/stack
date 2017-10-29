@@ -94,6 +94,7 @@ library:
   - Stack.Hoogle
   - Stack.IDE
   - Stack.Image
+  - Stack.ImportParser
   - Stack.Init
   - Stack.New
   - Stack.Nix
