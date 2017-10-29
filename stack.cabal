@@ -187,7 +187,7 @@ library
                      System.Process.PagerEditor
                      System.Process.Read
                      System.Process.Run
-  other-modules:     Hackage.Security.Client.Repository.HttpLib.HttpClient
+  other-modules:     Hackage.Security.Client.Repository.HttpLib.HttpClient, Stack.ImportParser
   build-depends:     Cabal >= 2.0 && < 2.1
                    , aeson (>= 1.0 && < 1.3)
                    , ansi-terminal >= 0.6.2.3
