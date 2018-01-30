@@ -86,6 +86,8 @@ data BuildOpts =
             -- ^ Whether to enable split-objs.
             ,boptsSkipComponents :: ![Text]
             -- ^ Which components to skip when building
+            ,boptsTypecheck :: !Bool
+            -- ^ Run ghc with -fno-code, so that the codebase is rapidly type checked.
             }
   deriving (Show)
 
@@ -114,6 +116,7 @@ defaultBuildOpts = BuildOpts
     , boptsCabalVerbose = False
     , boptsSplitObjs = False
     , boptsSkipComponents = []
+    , boptsTypecheck = False
     }
 
 defaultBuildOptsCLI ::BuildOptsCLI
@@ -151,6 +154,7 @@ data BuildCommand
     | Haddock
     | Bench
     | Install
+    | Typecheck
     deriving (Eq, Show)
 
 -- | Build options that may be specified in the stack.yaml or from the CLI
@@ -181,6 +185,7 @@ data BuildOptsMonoid = BuildOptsMonoid
     , buildMonoidCabalVerbose :: !(First Bool)
     , buildMonoidSplitObjs :: !(First Bool)
     , buildMonoidSkipComponents :: ![Text]
+    , buildMonoidTypecheck :: !(First Bool)
     } deriving (Show, Generic)
 
 instance FromJSON (WithJSONWarnings BuildOptsMonoid) where
@@ -211,6 +216,7 @@ instance FromJSON (WithJSONWarnings BuildOptsMonoid) where
               buildMonoidCabalVerbose <- First <$> o ..:? buildMonoidCabalVerboseArgName
               buildMonoidSplitObjs <- First <$> o ..:? buildMonoidSplitObjsName
               buildMonoidSkipComponents <- o ..:? buildMonoidSkipComponentsName ..!= mempty
+              buildMonoidTypecheck <- First <$> o ..:? buildMonoidTypecheckArgName
               return BuildOptsMonoid{..})
 
 buildMonoidLibProfileArgName :: Text
@@ -281,6 +287,9 @@ buildMonoidSplitObjsName = "split-objs"
 
 buildMonoidSkipComponentsName :: Text
 buildMonoidSkipComponentsName = "skip-components"
+
+buildMonoidTypecheckArgName :: Text
+buildMonoidTypecheckArgName = "typecheck"
 
 instance Monoid BuildOptsMonoid where
     mempty = memptydefault

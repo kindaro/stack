@@ -152,6 +152,7 @@ module Stack.Types.Config
   ,buildOptsMonoidHaddockL
   ,buildOptsMonoidTestsL
   ,buildOptsMonoidBenchmarksL
+  ,buildOptsMonoidTypecheckL
   ,buildOptsMonoidInstallExesL
   ,buildOptsHaddockL
   ,globalOptsBuildOptsMonoidL
@@ -1967,6 +1968,10 @@ buildOptsMonoidInstallExesL :: Lens' BuildOptsMonoid (Maybe Bool)
 buildOptsMonoidInstallExesL =
   lens (getFirst . buildMonoidInstallExes)
        (\buildMonoid t -> buildMonoid {buildMonoidInstallExes = First t})
+
+buildOptsMonoidTypecheckL :: Lens' BuildOptsMonoid (Maybe Bool)
+buildOptsMonoidTypecheckL = lens (getFirst . buildMonoidTypecheck)
+                            (\buildMonoid t -> buildMonoid {buildMonoidTypecheck = First t})
 
 buildOptsInstallExesL :: Lens' BuildOpts Bool
 buildOptsInstallExesL =

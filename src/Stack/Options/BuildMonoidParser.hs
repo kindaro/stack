@@ -21,7 +21,8 @@ buildOptsMonoidParser hide0 =
     haddockHyperlinkSource <*> copyBins <*> copyCompilerTool <*>
     preFetch <*> keepGoing <*> forceDirty <*>
     tests <*> testOptsParser hideBool <*> benches <*>
-    benchOptsParser hideBool <*> reconfigure <*> cabalVerbose <*> splitObjs <*> skipComponents
+    benchOptsParser hideBool <*> reconfigure <*> cabalVerbose <*>
+    splitObjs <*> skipComponents <*> typecheck
   where
     hideBool = hide0 /= BuildCmdGlobalOpts
     hide =
@@ -162,3 +163,8 @@ buildOptsMonoidParser hide0 =
                 (long "skip" <>
                  help "Skip given component, can be specified multiple times" <>
                  hide)))
+    typecheck = firstBoolFlags
+            "typecheck"
+             "Run ghc with -fno-code, \
+                    \so that the codebase is rapidly type checked."
+             hideExceptGhci
