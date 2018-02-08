@@ -218,10 +218,6 @@ commandLineHandler currentDir progName isInterpreter = complicatedOptions
                          "Shortcut for 'build --bench'"
                          buildCmd
                          (buildOptsParser Bench)
-        addBuildCommand' "typecheck"
-                         "Shortcut for 'build --typecheck'"
-                         buildCmd
-                         (buildOptsParser Typecheck)
         addBuildCommand' "haddock"
                          "Shortcut for 'build --haddock'"
                          buildCmd
@@ -596,7 +592,6 @@ buildCmd opts go = do
                Haddock -> set (globalOptsBuildOptsMonoidL.buildOptsMonoidHaddockL) (Just True) go
                Bench -> set (globalOptsBuildOptsMonoidL.buildOptsMonoidBenchmarksL) (Just True) go
                Install -> set (globalOptsBuildOptsMonoidL.buildOptsMonoidInstallExesL) (Just True) go
-               Typecheck -> set (globalOptsBuildOptsMonoidL.buildOptsMonoidTypecheckL) (Just True) go
                Build -> go -- Default case is just Build
 
 uninstallCmd :: [String] -> GlobalOpts -> IO ()
