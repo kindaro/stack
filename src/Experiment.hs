@@ -5,12 +5,11 @@ import System.Directory as D
 import System.Environment as E
 import Data.Map (Map)
 import Data.Set (Set)
-import Control.Monad.IO.Class (MonadIO)
 
 import RIO
 
 import Stack.Types.PackageName (PackageName)
-import Stack.Types.Config (lcLoadBuildConfig, defaultBuildOptsCLI)
+import Stack.Types.Config (lcLoadBuildConfig, defaultBuildOptsCLI, LoadConfig, BuildConfig, EnvConfig)
 import Stack.Types.Package (LocalPackage)
 import Stack.Build.Target (Target, NeedTargets(..))
 import Stack.Types.BuildPlan (LoadedSnapshot(..))
@@ -20,7 +19,8 @@ import Stack.Setup (setupEnv)
 
 import MainHelpers
 
-obtainLoadConfig lc = lcLoadBuildConfig lc Nothing
+obtainBuildConfig :: LoadConfig -> IO BuildConfig
+obtainBuildConfig lc = lcLoadBuildConfig lc Nothing
 
 data SourceMapFull = SourceMapFull
     { _packageMap :: Map PackageName Target
@@ -30,20 +30,22 @@ data SourceMapFull = SourceMapFull
     , _sourceMap :: SourceMap
     }
 
-runme :: IO SourceMapFull
-runme = do
+obtainEnvConfig :: IO EnvConfig
+obtainEnvConfig = do
     currentDir <- D.getCurrentDirectory
     progName <- E.getProgName
 
-    (mon,run) <- withArgs ["build"] (commandLineHandler currentDir progName False)
+    (mon,_) <- withArgs ["build"] (commandLineHandler currentDir progName False)
 
     let opts = globalOptsFromMonoid False mon
 
-    buildConfig <- loadConfigWithOpts opts obtainLoadConfig
+    buildConfig <- loadConfigWithOpts opts obtainBuildConfig
     envConfig <- runRIO buildConfig (setupEnv Nothing)
 
-        
+    return envConfig
 
+obtainSourceMapFull :: EnvConfig -> IO SourceMapFull
+obtainSourceMapFull envConfig = do
     stuff <- runRIO envConfig (S.loadSourceMapFull NeedTargets defaultBuildOptsCLI)
     let ( packageMap , loadedSnapshot , localPackages , packageNames , sourceMap) = stuff
     return $ SourceMapFull packageMap loadedSnapshot localPackages packageNames sourceMap
